@@ -9,7 +9,7 @@ link in-details : https://medium.com/@ezekiel.umesi/understanding-deployment-str
 ## 🛠️ 1. Deployment Strategies Explained Simply
 
 When you release a new version of your application (e.g., updating a container image from `v1` to `v2`), Kubernetes offers different strategies to manage how those pods are updated.
-
+---
 ### 1. Recreate Strategy (Hard Reset)
 *   **Concept:** Kubernetes terminates all existing `v1` pods simultaneously. Once all old pods are completely dead, it starts creating the new `v2` pods.
 
@@ -21,7 +21,7 @@ When you release a new version of your application (e.g., updating a container i
 
 
 
-
+---
 ### 2. Rolling Update Strategy (Gradual Phase-In — Default ✅)
 
 *   **Concept:** Kubernetes updates pods incrementally. It spins up a few `v2` pods, waits for them to become healthy, and then terminates a few `v1` pods. This process loops until all pods are running the new version.
@@ -31,7 +31,7 @@ When you release a new version of your application (e.g., updating a container i
     *   `maxSurge`: Specifies how many extra pods can be created above your desired replica count during the update (e.g., `1` means temporarily running `desired + 1` pods).
     *   `maxUnavailable`: Specifies how many pods can be taken offline simultaneously during the update process.
 
-
+---
 ### 3. Blue/Green Deployment (Instant Traffic Flip)
 
 *   **Concept:** You maintain two identical, isolated production environments. **Blue** runs the current live version (`v1`), while **Green** hosts the new version (`v2`). Once the Green environment passes all automated tests, you update your Kubernetes Service/Router to point traffic to Green instantly.
@@ -39,7 +39,7 @@ When you release a new version of your application (e.g., updating a container i
 *   **Rollback:** Extremely easy. If an undetected bug crashes `v2`, you can route the Service traffic straight back to Blue.
 *   **Trade-off:** ❌ **Resource Intensive**. It requires double the infrastructure space (CPU/RAM) since both environments run concurrently during testing.
 
-
+---
 ### 4. Canary Deployment (Blast Radius Control)
 
 *   **Concept:** You deploy the new version (`v2`) alongside the old version but route only a small fraction of real production traffic to it (e.g., 5% to 10%). You monitor system logs and error rates. If everything looks stable, you gradually scale up `v2` and scale down `v1`.
