@@ -2,10 +2,10 @@
 
 ## 1. Introduction
 
-### 🔹 Persistent Volume (PV)
+### 🔹 Persistent Volume (PV) 
 A Persistent Volume is a storage resource in a Kubernetes cluster that provides persistent storage, independent of Pod lifecycles. It is defined and managed by the cluster administrator.
 
-### 🔹 Persistent Volume Claim (PVC)
+### 🔹 Persistent Volume Claim (PVC) 
 A Persistent Volume Claim is a request for storage by a user. Pods use PVCs to access PVs.
 
 ### 🔹 Dynamic Provisioning
@@ -16,13 +16,13 @@ Dynamic provisioning automatically creates PVs based on a PVC when a StorageClas
 ## 🛠️ Kubernetes Persistent Volume (PV) and Persistent Volume Claim (PVC) Demo
 
 ```bash
-mkdir -p /mnt/data
+mkdir -p /mnt/data # step 1
 df -hT
 ```
 
 ---
 
-## 1. Persistent Volume (PV)
+## 1. Persistent Volume (PV) (step-2)
 
 ### 🔹 Example: Persistent Volume (PV)
 ```yaml
@@ -152,13 +152,11 @@ exit
 kubectl delete pod my-pod
 kubectl apply -f pod.yaml   #change the pod name
 kubectl exec -it another-pod -- cat /usr/share/nginx/html/index.html
-```
-
-`pvpvc`
 
 ```
 
-<img width="2256" height="872" alt="image" src="https://github.com/user-attachments/assets/c767ff0a-ee48-456c-8281-9d1482f40a53" />
+<img width="2256" height="872" alt="image" src="https://github.com/user-attachments/assets/db4e16bd-9f9f-4efc-9978-d886f71a15e3" />
 
 
-```
+
+
