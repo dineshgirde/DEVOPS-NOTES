@@ -3,7 +3,9 @@
 ## 📚 Complete Ingress Routing Guide (Beginner → Intermediate → Practical)
 ### ⚡ Advanced Traffic Routing and Path-Based Layer 7 Load Balancing
 
----
+## ## Defination Ingress
+
+An Ingress is a Kubernetes API object that manages external access to the services inside a cluster, typically handling HTTP and HTTPS traffic. It acts as an intelligent entry point, reverse proxy, and routing layer for your application infrastructure.In simple terms, it acts as a Traffic Cop for your cluster, looking at incoming requests from the internet and directing them to the correct internal application.
 
 ## 📌 notes 
 1. **Ingress rule** ---> this object ensures or rather its a rule book which states that which a user what to view a particular microservicce 
