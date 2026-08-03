@@ -179,8 +179,12 @@ Job 2 runs with `agent { label 'project' }`, meaning the Application server was 
 `Manage Jenkins → Nodes → New Node`
 - **Name:** e.g. `application-server`
 - **Labels:** `project`
-- **Launch method:** Launch agent via SSH (Host = Application server IP, Credentials = `ubuntu`)
+- **Launch method:** Launch agents via SSH
+  - **Host:** IP address of the Application server
+  - **Credentials:** select `ubuntu` (the key/credential added earlier)
+  - **Host Key Verification Strategy:** **Non verifying Verification Strategy** (skips strict host key checking, so Jenkins can connect without manually accepting the server's SSH fingerprint first)
 - **Remote root directory:** e.g. `/home/ubuntu/jenkins-agent`
+- Click **Save** → Jenkins connects over SSH and launches the agent
 
 Once connected, this node executes Job 2 (`docker run`) directly on the Application server, using the Docker daemon installed there.
 
@@ -196,25 +200,19 @@ sudo apt install openjdk-17-jdk -y
 
 # Docker
 sudo apt install docker.io -y
-sudo systemctl enable docker
 sudo systemctl start docker
-sudo usermod -aG docker $USER
+sudo usermod -aG docker jenkins
+sudo usermod -aG docker ubuntu
+newgrp docker
+sudo chmod 777 /var/run/docker.sock
 
 # AWS CLI
 sudo apt install awscli -y
 ```
 
-### Docker Socket Permission (applied on BOTH Master & Application servers)
+> ⚠️ **Permission note:** `chmod 777 /var/run/docker.sock` was applied on **both** servers to quickly unblock Jenkins → Docker access — fine for this lab. In production, the `usermod -aG docker jenkins`/`usermod -aG docker ubuntu` step above is usually enough on its own (no `chmod 777` needed), since group membership already grants socket access. Also note `chmod 777` resets on reboot (`/var/run` is `tmpfs`), so it needs to be re-applied after a restart unless a systemd override is used.
 
-Since Job 1 (on Master) runs `docker build`/`docker push`, and Job 2 (on the Application server, via the Jenkins agent) runs `docker run`, the Jenkins process on **both** servers needs access to the Docker daemon socket:
-
-```bash
-sudo chmod 777 /var/run/docker.sock
-```
-
-> ⚠️ **Permission note:** `chmod 777 /var/run/docker.sock` gets Jenkins → Docker access working quickly on both servers, which is fine for this lab. In production, prefer adding the Jenkins/agent user to the `docker` group instead (`sudo usermod -aG docker jenkins` on the Master, and the equivalent agent-launch user on the Application server, followed by a restart) — same access without exposing the socket to every local user. Also note this permission **resets on reboot** since `/var/run` is typically a `tmpfs`; for persistence across reboots, use the `usermod -aG docker` approach or a systemd override instead of a manual `chmod`.
-
-### Master Server – Additional Setup (Jenkins + SonarQube)
+### Master Server – Additional Setup
 
 ```bash
 # Jenkins
@@ -232,20 +230,14 @@ sudo systemctl restart jenkins
 sudo systemctl restart docker
 ```
 
-**SonarQube:**
+**SonarQube** — run as a Docker container (not a manual binary install):
 
 ```bash
-sudo adduser sonarqube
-sudo su - sonarqube
-wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.9.0.65466.zip
-sudo apt install unzip -y
-unzip sonarqube-9.9.0.65466.zip
-mv sonarqube-9.9.0.65466 sonarqube
-cd sonarqube/bin/linux-x86-64/
-./sonar.sh start
+docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
 ```
 
 SonarQube → `http://<master-server-ip>:9000`
+(default login: `admin` / `admin`, then change password on first login)
 
 ---
 
